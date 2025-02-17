@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import time
 import asyncio
 
-# Dein Telegram Bot-Token (von BotFather)
+# Dein Telegram Bot-Token
 TOKEN = "7675408964:AAGnnUsKLJ29B_FzMtQ8WsUksmiIKgWS9bw"
 
 # Deine Telegram-Chat-ID
@@ -16,16 +16,18 @@ bot = telegram.Bot(token=TOKEN)
 
 # Funktion zum Abrufen von Trend-MemeCoins
 def get_trending_coins():
-    url = "https://www.bullxneo.com/trending"  # Falls BullXNeo eine andere URL hat, anpassen!
+    url = "https://neo.bullx.io/"  # BullXNeo-Webseite
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
     coins = []
-    for coin in soup.find_all("div", class_="coin-data"):  # Je nach Website-Struktur anpassen
-        name = coin.find("h2").text
-        price_change = float(coin.find("span", class_="price-change").text.strip("%"))
+    
+    # 🔹 Anpassung: Suche nach Coin-Daten im HTML (Je nach Struktur evtl. ändern)
+    for coin in soup.find_all("div", class_="coin-card"):  # Falls die Klasse anders heißt, anpassen!
+        name = coin.find("h2").text.strip()  # Coin-Name
+        price_change = coin.find("span", class_="price-change").text.strip("%")  # Preisänderung
 
-        if price_change > 20:  # Coins mit starkem Anstieg (>20%)
+        if float(price_change) > 20:  # Falls der Coin stark ansteigt (>20%)
             coins.append(f"{name} 🚀 +{price_change}%")
 
     return coins
@@ -40,7 +42,7 @@ async def send_alert():
     
     await bot.send_message(chat_id=CHAT_ID, text=message)
 
-# Automatische Überprüfung alle X Minuten
+# Automatische Überprüfung alle 5 Minuten
 async def main():
     while True:
         await send_alert()
