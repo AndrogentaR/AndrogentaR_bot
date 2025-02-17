@@ -11,13 +11,15 @@ TOKEN = "7675408964:AAGnnUsKLJ29B_FzMtQ8WsUksmiIKgWS9bw"
 # Deine Telegram-Chat-ID
 CHAT_ID = "5738627127"
 
+# Die richtige Login-URL von BullXNeo (die immer gleich bleibt)
+LOGIN_URL = "https://neo.bullx.io/login?address=0x07db81bf8159654acb168a18afdc2e994db4e4f8&signature=0x926203b961ce5d1f7669e08898ebdd3743f5d303f2647d406ee953a8d1fd9c5675821626677fbd187d1a4994"
+
 # Telegram-Bot initialisieren
 bot = telegram.Bot(token=TOKEN)
 
 # Funktion zum Abrufen von Trend-MemeCoins
 def get_trending_coins():
-    url = "https://neo.bullx.io/"  # BullXNeo-Webseite
-    response = requests.get(url)
+    response = requests.get(LOGIN_URL)
     soup = BeautifulSoup(response.text, "html.parser")
 
     coins = []
