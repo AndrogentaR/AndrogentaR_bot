@@ -5,27 +5,29 @@ from bs4 import BeautifulSoup
 import time
 import asyncio
 
-# Dein Telegram Bot-Token
+# Dein Telegram Bot-Token (von BotFather)
 TOKEN = "7675408964:AAGnnUsKLJ29B_FzMtQ8WsUksmiIKgWS9bw"
 
 # Deine Telegram-Chat-ID
 CHAT_ID = "5738627127"
 
-# Die richtige Login-URL von BullXNeo
+# Die richtige Login-URL von BullXNeo (bleibt immer gleich)
 LOGIN_URL = "https://neo.bullx.io/login"
 
-# Dein BullX Session Token (mit den exakten Bindestrichen)
-BULLX_SESSION_TOKEN = "eyJhbGciOiJIUz1NilsinR5cCI6IkpXVCJ9.eyJ1c2VySWQiOilweDAЗZGI4MWJmODE10TY1NGFjYjE2OGExOGFmZGMyZTk5NGRiNGU0ZjgiLCJzZXNzaW9uSWQiOiJzcXN3cmRNTXQ4bUJyZEFkc1VQcGsiLCJzdWJzY3JpcHRpb25QbGFuljoiQkFTSUMiLCJoYXNoljoiYmVhZDJIYTIZGQyNzkyZGIOMWQwYmU1MGJhNmY1MjJiYjRIMTQ3NjlmZGQ3YzUwYTA1MzhIM2FmNmUwMDc4NylsImlhdCI6MTczOTgyNzgwMSwiZXhwljoxNzQ3NjAzODAxfQ.9puxCRm0N8U-ZelgJs5mA4c0Qp-ALb4--sgY16ZZns0"
+# Dein BullX-Session-Cookie (aus den Entwicklertools ausgelesen)
+SESSION_COOKIE = "eyJhbGciOiJIUz1NilsinR5cCI6IkpXVCJ9.eyJ1c2VySWQiOilw..."  # Hier den echten Wert einfügen
 
-# HTTP-Header mit Cookie setzen
-HEADERS = {
-    "Cookie": f"bullx-session-t={BULLX_SESSION_TOKEN}",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
+# Telegram-Bot initialisieren
+bot = telegram.Bot(token=TOKEN)
 
 # Funktion zum Abrufen von Trend-MemeCoins
 def get_trending_coins():
-    response = requests.get(LOGIN_URL, headers=HEADERS)
+    headers = {
+        "Cookie": f"bullx-session-t={SESSION_COOKIE}".encode("utf-8").decode("utf-8"),
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+    }
+    
+    response = requests.get(LOGIN_URL, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
 
     coins = []
@@ -45,7 +47,7 @@ async def send_alert():
         message = "🚀 Neue Trend-MemeCoins:\n" + "\n".join(coins)
     else:
         message = "❌ Keine neuen Trend-Coins gefunden."
-
+    
     await bot.send_message(chat_id=CHAT_ID, text=message)
 
 # Automatische Überprüfung alle 5 Minuten
